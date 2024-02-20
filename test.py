@@ -76,8 +76,9 @@ def capture():
                         imgResizeShape = imgResize.shape
                         wGap = math.ceil((IMG_SIZE - wCal) / 2)
                         imgWhite[:, wGap: wCal + wGap] = imgResize
-                        prediction, index = classifier.getPrediction(imgWhite)
-                        print(prediction, index)
+                        if not wait:
+                            prediction, index = classifier.getPrediction(imgWhite)
+                            print(prediction, index)
                         #   Pastes imgCrop onto imgWhite
 
                     else:
@@ -87,7 +88,8 @@ def capture():
                         imgResizeShape = imgResize.shape
                         hGap = math.ceil((IMG_SIZE - hCal) / 2)
                         imgWhite[hGap: hCal + hGap, :] = imgResize
-                        prediction, index = classifier.getPrediction(imgWhite)
+                        if not wait:
+                            prediction, index = classifier.getPrediction(imgWhite)
                         #   Pastes imgCrop onto imgWhite
 
                     # Text To Speech
@@ -136,8 +138,9 @@ def capture():
                         imgResizeShape = imgResize.shape
                         wGap = math.ceil((IMG_SIZE - wCal) / 2)
                         imgWhite[:, wGap: wCal + wGap] = imgResize
-                        prediction, index = classifier.getPrediction(imgWhite)
-                        print(prediction, index)
+                        if not wait:
+                            prediction, index = classifier.getPrediction(imgWhite)
+                            print(prediction, index)
                         #   Pastes imgCrop onto imgWhite
 
                     else:
@@ -147,7 +150,8 @@ def capture():
                         imgResizeShape = imgResize.shape
                         hGap = math.ceil((IMG_SIZE - hCal) / 2)
                         imgWhite[hGap: hCal + hGap, :] = imgResize
-                        prediction, index = classifier.getPrediction(imgWhite)
+                        if not wait:
+                            prediction, index = classifier.getPrediction(imgWhite)
                         #   Pastes imgCrop onto imgWhite
 
                     # Text To Speech
