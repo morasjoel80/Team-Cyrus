@@ -14,7 +14,7 @@ IMG_SIZE = 600
 
 #   Variables
 counter = 0
-folder = "Data/class_name"
+folder = "Data/test"
 
 while True:
     try:
@@ -103,8 +103,11 @@ while True:
         cv2.imshow("image", img)
         key = cv2.waitKey(1)
 
-        if key == ord('s'):
+        if key == ord("s"):
             counter += 1
+            cv2.imwrite(f'{folder}/Image_{time.time()}.jpg', imgwhite)
+            #   Saves samples in the specified folder
+            print(counter)
 
 
     except cv2.error:
