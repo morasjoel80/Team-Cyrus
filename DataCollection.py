@@ -109,7 +109,6 @@ while True:
             #   Saves samples in the specified folder
             print(counter)
 
-
     except cv2.error:
         print("\n Cannot Detect (Out of Bounds)")
 
