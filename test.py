@@ -10,9 +10,9 @@ import time
 #   Constants
 OFFSET = 20
 IMG_SIZE = 600
-MODEL_PATH = ""
-LABEL_PATH = ""
-
+MODEL_PATH = "Model/"
+LABEL_PATH = "Model/"
+SPEECH_PATH = "Speech"
 
 #   Initialization
 cap = cv2.VideoCapture(0)
