@@ -94,7 +94,7 @@ def capture():
 
                     # Text To Speech
 
-                    if text != Labels[index]:
+                    if text != Labels[index] and not wait:
                         text = str(Labels[index])
                         threading.Thread(
                             target=speech, args=(text,)
