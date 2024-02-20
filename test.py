@@ -10,8 +10,8 @@ import time
 #   Constants
 OFFSET = 20
 IMG_SIZE = 600
-MODEL_PATH = "Model/"
-LABEL_PATH = "Model/"
+MODEL_PATH = "Model/keras_model.h5"
+LABEL_PATH = "Model/labels.txt"
 SPEECH_PATH = "Speech"
 
 #   Initialization
