@@ -7,11 +7,12 @@ import numpy as np
 import math
 import time
 
-MODEL_PATH = "Model/keras_model.h5"
-LABEL_PATH = "Model/labels.txt"
+MODEL_PATH = "Model/keras_model4.h5"
+LABEL_PATH = "Model/labels4.txt"
 SPEECH_PATH = "speech"
-cap = cv2.VideoCapture(1)
-detector = HandDetector(maxHands=2, detectionCon=0.8)
+cap = cv2.VideoCapture(0)
+detector = HandDetector(maxHands=2, detectionCon=0.8
+                        )
 classifier = Classifier(MODEL_PATH, LABEL_PATH)
 
 # Constants

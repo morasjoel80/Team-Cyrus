@@ -14,7 +14,7 @@ IMG_SIZE = 600
 
 #   Variables
 counter = 0
-folder = "Data/No"
+folder = "Data/Where"
 
 while True:
     try:
