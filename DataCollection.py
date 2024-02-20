@@ -4,7 +4,7 @@ import numpy as np
 import math
 import time
 #   Initialization
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 detector = HandDetector(maxHands=2, detectionCon=0.8)
 
 
@@ -14,7 +14,7 @@ IMG_SIZE = 600
 
 #   Variables
 counter = 0
-folder = "Data/C"
+folder = "Data/l"
 
 while True:
     try:

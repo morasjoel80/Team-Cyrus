@@ -15,7 +15,7 @@ FOLDER = "Speech"
 for i in range(len(label)):
     text = label[i]
     print(f"\n Converting {label[i]}...")
-    tts = gTTS(text, slow=False, lang='en-in')
+    tts = gTTS(text, slow=False, lang='en')
     #   converts the given text to speech
 
     if not tts.save(f'{FOLDER}/{text}.mp3'):
