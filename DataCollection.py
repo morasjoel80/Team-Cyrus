@@ -14,8 +14,8 @@ IMG_SIZE = 600
 
 while True:
     try:
-        success,img= cap.read()
-        hands,img = detector.findHands(img)
+        success, img = cap.read()
+        hands, img = detector.findHands(img)
 
         if hands:
             hand1 = hands[0]
@@ -45,9 +45,57 @@ while True:
                     hGap = math.ceil((IMG_SIZE - hCal) / 2)
                     imgwhite[hGap: hCal + hGap, :] = imgResize
 
+                cv2.imshow("Crop", imgcrop)
+                cv2.imshow("White", imgwhite)
+
+            if len(hands) == 2:
+                hand2 = hands[1]
+                if hand1["type"] == "Right":
+                    #   If first hand to be detected is right
+                    x, y, w, h = hand1["bbox"]
+                    centerpoint1 = hand1["center"]
+                    x1, y1, w1, h1 = hand2["bbox"]
+                    centerpoint2 = hand2["center"]
+
+                else:
+                    #   If first hand to be detected is left
+                    x, y, w, h = hand2["bbox"]
+                    centerpoint1 = hand2["center"]
+                    x1, y1, w1, h1 = hand1["bbox"]
+                    centerpoint2 = hand1["center"]
+
+                length, info, img = detector.findDistance(centerpoint1, centerpoint2, img)
+
+                if y < y1:
+                    #   Crops with respect to the left hand (if left hand is higher than the right)
+                    imgCrop = img[y - OFFSET: info[3] + h1 + OFFSET, x - OFFSET: info[2] + w1 + (OFFSET + 50)]
+                else:
+                    #   Crops with respect to the right hand (if right hand is higher than the left)
+                    imgCrop = img[y1 - OFFSET: info[1] + h + OFFSET, x - OFFSET: info[2] + w1 + (OFFSET + 50)]
+
+                Havg = (info[1] + info[3]) + (y + y1) / 2
+                Wavg = (info[0] + info[2]) + (x + x1) / 2
+                aspectRatio = Havg / Wavg
+
+                if aspectRatio > 1:
+                    k = IMG_SIZE / Havg
+                    wCal = math.ceil(k * Wavg)
+                    imgResize = cv2.resize(imgCrop, (wCal, IMG_SIZE))
+                    imgResizeShape = imgResize.shape
+                    wGap = math.ceil((IMG_SIZE - wCal) / 2)
+                    imgwhite[:, wGap: wCal + wGap] = imgResize
+
+                else:
+                    k = IMG_SIZE / Wavg
+                    hCal = math.ceil(k * Havg)
+                    imgResize = cv2.resize(imgCrop, (IMG_SIZE, hCal))
+                    imgResizeShape = imgResize.shape
+                    hGap = math.ceil((IMG_SIZE - hCal) / 2)
+                    imgwhite[hGap: hCal + hGap, :] = imgResize
 
                 cv2.imshow("Crop", imgcrop)
                 cv2.imshow("White", imgwhite)
+
         cv2.imshow("image", img)
         cv2.waitKey(1)
     except cv2.error:
