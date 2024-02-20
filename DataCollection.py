@@ -2,7 +2,7 @@ import cv2
 from cvzone.HandTrackingModule import HandDetector
 import numpy as np
 import math
-
+import time
 #   Initialization
 cap = cv2.VideoCapture(0)
 detector = HandDetector(maxHands=2, detectionCon=0.8)
@@ -11,6 +11,10 @@ detector = HandDetector(maxHands=2, detectionCon=0.8)
 #   Constants
 OFFSET = 20
 IMG_SIZE = 600
+
+#   Variables
+counter = 0
+folder = "Data/class_name"
 
 while True:
     try:
@@ -68,10 +72,10 @@ while True:
 
                 if y < y1:
                     #   Crops with respect to the left hand (if left hand is higher than the right)
-                    imgCrop = img[y - OFFSET: info[3] + h1 + OFFSET, x - OFFSET: info[2] + w1 + (OFFSET + 50)]
+                    imgCrop = img[y - OFFSET - 50: info[3] + h1 + OFFSET, x - OFFSET: info[2] + w1 + (OFFSET + 50)]
                 else:
                     #   Crops with respect to the right hand (if right hand is higher than the left)
-                    imgCrop = img[y1 - OFFSET: info[1] + h + OFFSET, x - OFFSET: info[2] + w1 + (OFFSET + 50)]
+                    imgCrop = img[y1 - OFFSET - 50: info[1] + h + OFFSET, x - OFFSET: info[2] + w1 + (OFFSET + 50)]
 
                 Havg = (info[1] + info[3]) + (y + y1) / 2
                 Wavg = (info[0] + info[2]) + (x + x1) / 2
@@ -97,9 +101,15 @@ while True:
                 cv2.imshow("White", imgwhite)
 
         cv2.imshow("image", img)
-        cv2.waitKey(1)
+        key = cv2.waitKey(1)
+
+        if key == ord('s'):
+            counter += 1
+
+
     except cv2.error:
         print("\n Cannot Detect (Out of Bounds)")
+
 
 
 
