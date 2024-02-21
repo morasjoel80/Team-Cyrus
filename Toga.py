@@ -1,25 +1,12 @@
 import cv2
-import tkinter
 from cvzone.HandTrackingModule import HandDetector
 from cvzone.ClassificationModule import Classifier
 from playsound import playsound
 import threading
 import numpy as np
 import math
-from PIL import Image, ImageTk
-
-#   Tkinter
-TEXT = 'Stop'
-CONDITION = False
-window = Tk() # Create an instance of Tk
-window.geometry('900x720')
-window.configure(bg='black')
-window.title("Sign Language")
-
-F1 = window.LabelFrame(window, bg='white')
-F1.pack()
-L1 = window.Label(F1, bg='white')
-L1.pack()
+from PIL import Image
+from toga import App, Box, Button, ImageView, Label, SplitContainer, Icon
 
 #   OpenCV
 
@@ -43,34 +30,6 @@ Labels = f
 print(Labels)
 folder.close()
 
-
-# Init text to speech
-def on_cam():
-    global cam_on, cap
-    cap = cv2.VideoCapture(0)
-    cam_on = True
-
-def off_cam():
-    global cam_on, cap
-    cap.release()
-    cam_on = False
-
-
-button1 = tkinter.Button(window,
-                         text='Start', bg='white', fg='black',
-                         font=("times new roman", 20, "bold"),
-                         justify='left',
-                         command=on_cam
-                        )
-button1.place(x=350, y=540)
-button2 = tkinter.Button(window,
-                         text='Stop', bg='white', fg='black',
-                         font=("times new roman", 20, "bold"),
-                         justify='right',
-                         command=off_cam
-                         )
-button2.place(x=550, y=540)
-
 def speech(audio):
     global wait
     print(audio)
@@ -85,16 +44,59 @@ def speech(audio):
             except:
                 continue
 
+class SignLanguageApp(App):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.cam_on = False
+        self.cap = None
+        self.labels = []
+        self.wait = False
 
-def capture():
-    global wait
+    def on_cam(self, widget):
+        self.cap = cv2.VideoCapture(0)
+        self.cam_on = True
+
+    def off_cam(self, widget):
+        self.cap.release()
+        self.cam_on = False
+
+    def build(self):
+        main_box = Box()
+
+        # Create Toga widgets
+        button_start = Button('Start', on_press=self.on_cam)
+        button_stop = Button('Stop', on_press=self.off_cam)
+        image_view = ImageView(style=ImageView.Style.FIT)
+
+        # Add widgets to the main box
+        main_box.add(button_start)
+        main_box.add(button_stop)
+        main_box.add(image_view)
+
+        # Set up the main content
+        main_content = SplitContainer()
+        main_content.content = [main_box]
+
+        # Set up the main window
+        self.main_window = main_content
+
+        return self.main_window
+
+    def update_image(self, img):
+        # Convert the image to a format suitable for Toga ImageView
+        img = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+        self.main_window.content[0].content[2].value = img
+
+
+def capture(app):
     text = ''
     while True:
-        if cam_on:
+        if app.cam_on:
             try:
-
-                success, img = cap.read()
+                success, img = app.cap.read()
                 imgOutput = img.copy()
+
+                # Your existing image processing code goes here
                 hands, img = detector.findHands(img)
                 #   Finds Hands from img
                 if hands:
@@ -105,7 +107,7 @@ def capture():
                     imgWhite = np.ones((IMG_SIZE, IMG_SIZE, 3), np.uint8) * 255
                     #   Initialize white background to put cropped image onto
 
-                    if len(hands) == 1:     #   When one hand is detected
+                    if len(hands) == 1:  # When one hand is detected
                         imgCrop = img[y - OFFSET: y + h + OFFSET, x - OFFSET: x + w + OFFSET]
                         #   Crops Hand with Bone structure
 
@@ -147,9 +149,9 @@ def capture():
                                     (255, 0, 255),
                                     2)
 
-                    if len(hands) == 2:     #   When two hands are detected
+                    if len(hands) == 2:  # When two hands are detected
                         hand2 = hands[1]
-                        if hand1["type"] == "Right":    #   Checks whether the first hand to be detected is right
+                        if hand1["type"] == "Right":  # Checks whether the first hand to be detected is right
                             x, y, w, h = hand1['bbox']
                             centerpoint1 = hand1["center"]
                             x1, y1, w1, h1 = hand2['bbox']
@@ -164,13 +166,13 @@ def capture():
 
                         if y < y1:
                             #   Crops with respect to the left hand (if left hand is higher than the right)
-                            imgCrop = img[y - OFFSET: info[3] +h1 + OFFSET, x - OFFSET: info[2] + w1 + (OFFSET + 50)]
+                            imgCrop = img[y - OFFSET: info[3] + h1 + OFFSET, x - OFFSET: info[2] + w1 + (OFFSET + 50)]
                         else:
                             #   Crops with respect to the right hand (if right hand is higher than the left)
                             imgCrop = img[y1 - OFFSET: info[1] + h + OFFSET, x - OFFSET: info[2] + w1 + (OFFSET + 50)]
 
-                        Havg = (info[1]+info[3])+(y+y1)/2
-                        Wavg = (info[0]+info[2])+(x+x1)/2
+                        Havg = (info[1] + info[3]) + (y + y1) / 2
+                        Wavg = (info[0] + info[2]) + (x + x1) / 2
                         aspectRatio = Havg / Wavg
 
                         if aspectRatio > 1:
@@ -204,29 +206,20 @@ def capture():
                             ).start()
                         # Output Box
 
-                        cv2.putText(imgOutput, Labels[index], (x, y - OFFSET), cv2.FONT_HERSHEY_COMPLEX, 2, (255, 0, 255),
+                        cv2.putText(imgOutput, Labels[index], (x, y - OFFSET), cv2.FONT_HERSHEY_COMPLEX, 2,
+                                    (255, 0, 255),
                                     2)
-
-
-                    #   cv2.imshow("ImageCrop", imgCrop)
-                    #   Display cropped hand/s
-                    #cv2.imshow("ImageWhite", imgWhite)
-                #cv2.imshow("Image", imgOutput)
-                imgOutput = cv2.cvtColor(imgOutput, cv2.COLOR_BGR2RGB)
-                imgOutput = ImageTk.PhotoImage(Image.fromarray(imgOutput))
-                L1["image"] = imgOutput
-                cv2.waitKey(1)
-                window.update()
+                # Update the Toga ImageView
+                app.update_image(imgOutput)
             except cv2.error:
                 print("\nCannot Detect(Out of bounds)")
-                # Prevents crash when hand is present outside the frame
         else:
-            imgBlack = np.ones((500, 500, 3), np.uint8)
-            imgBlack = cv2.cvtColor(imgBlack, cv2.COLOR_BGR2RGB)
-            imgBlack = ImageTk.PhotoImage(Image.fromarray(imgBlack))
-            L1["image"] = imgBlack
-            window.update()
+            # Display a black image when the camera is off
+            img_black = np.ones((500, 500, 3), np.uint8)
+            img_black = cv2.cvtColor(img_black, cv2.COLOR_BGR2RGB)
+            app.update_image(img_black)
 
 
 if __name__ == "__main__":
-    capture()
+    app = SignLanguageApp('Sign Language', 'org.example.signlanguageapp', startup=capture)
+    app.main_loop()

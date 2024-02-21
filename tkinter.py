@@ -1,24 +1,24 @@
 import cv2
-import tkinter
 from cvzone.HandTrackingModule import HandDetector
 from cvzone.ClassificationModule import Classifier
 from playsound import playsound
 import threading
 import numpy as np
 import math
+from tkinter import *
 from PIL import Image, ImageTk
 
 #   Tkinter
 TEXT = 'Stop'
 CONDITION = False
-window = Tk() # Create an instance of Tk
+window = Tk()
 window.geometry('900x720')
 window.configure(bg='black')
 window.title("Sign Language")
 
-F1 = window.LabelFrame(window, bg='white')
+F1 = LabelFrame(window, bg='white')
 F1.pack()
-L1 = window.Label(F1, bg='white')
+L1 = Label(F1, bg='white')
 L1.pack()
 
 #   OpenCV
